@@ -1585,12 +1585,20 @@ static int vidioc_reqbufs(struct file *file, void *fh,
 		return -EBUSY;
 	}
 
-	init_buffers(dev);
+	// init_buffers(dev);
 	switch (b->memory) {
 	case V4L2_MEMORY_MMAP:
 		/* do nothing here, buffers are always allocated */
 		if (b->count < 1 || dev->buffers_number < 1)
 			return 0;
+
+		/* don't change the num of bufs if ready_for_capture */
+		if (dev->ready_for_capture) {
+			b->count = opener->buffers_number = dev->used_buffers;
+			return 0;
+		}
+
+		init_buffers(dev);
 
 		if (b->count > dev->buffers_number)
 			b->count = dev->buffers_number;
@@ -1929,8 +1937,8 @@ static int vidioc_streamon(struct file *file, void *fh, enum v4l2_buf_type type)
 	case V4L2_BUF_TYPE_VIDEO_CAPTURE:
 		if (!dev->ready_for_capture)
 			return -EIO;
-		if (dev->active_readers > 0)
-			return -EBUSY;
+		// if (dev->active_readers > 0)
+		// 	return -EBUSY;
 		opener->type = READER;
 		dev->active_readers++;
 		client_usage_queue_event(dev->vdev);

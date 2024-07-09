@@ -344,6 +344,27 @@ modern distributions, you need to update this ramdisk with the settings above,
 before they take effect at boot time. In Ubuntu, this image is updated with
 `sudo update-initramfs`. The equivalent on Fedora is `sudo dracut -f`.
 
+# TEST WITH GSTREAMER
+## install
+```
+cd v4l2loopback
+make
+sudo make install
+sudo depmod -a
+sudo modprobe -r v4l2loopback
+sudo modprobe v4l2loopback video_nr=1
+```
+## videotestsrc
+```
+gst-launch-1.0 -v videotestsrc ! videoconvert ! video/x-raw !  identity drop-allocation=true ! v4l2sink device=/dev/video1 sync=false
+```
+```
+export DISPLAY=:0
+```
+```
+gst-launch-1.0 v4l2src device=/dev/video1 ! videoconvert ! ximagesink
+```
+
 
 # DOWNLOAD
 The most up-to-date version of this module can be found at

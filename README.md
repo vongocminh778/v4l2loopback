@@ -365,6 +365,12 @@ export DISPLAY=:0
 gst-launch-1.0 v4l2src device=/dev/video1 ! videoconvert ! ximagesink
 ```
 
+```
+gst-launch-1.0 videotestsrc ! tee ! v4l2sink device=/dev/video1
+gst-launch-1.0 v4l2src device=/dev/video1 ! nvvidconv ! 'video/x-raw(memory:NVMM),format=NV12' ! nvoverlaysink
+gst-launch-1.0 v4l2src device=/dev/video1 ! videoconvert ! ximagesink
+```
+
 
 # DOWNLOAD
 The most up-to-date version of this module can be found at
